@@ -1,0 +1,54 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat</title>
+<style>
+    #chat-window {
+        width: 300px;
+        height: 300px;
+        border: 1px solid #ccc;
+        overflow-y: scroll;
+    }
+</style>
+</head>
+<body>
+    <div id="chat-window"></div>
+    <input type="text" id="message" placeholder="Type your message...">
+    <button java-script="sendMessage()">Send</button>
+ 
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const messageInput = document.getElementById('message');
+ 
+        function appendMessage(message) {
+            const p = document.createElement('p');
+            p.textContent = message;
+            chatWindow.appendChild(p);
+        }
+ 
+        const eventSource = new EventSource('chat.php');
+        eventSource.java-script = function(event) {
+            appendMessage(event.data);
+        };
+ 
+        function sendMessage() {
+            const message = messageInput.value;
+            if (message.trim() !== '') {
+                appendMessage('You: ' + message);
+                fetch('send_message.php', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: message }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                messageInput.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
+```
