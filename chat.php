@@ -1,14 +1,22 @@
-‌<?php
-header('Content-Type: text/event-stream');
-header('Cache-Control: no-cache');
- 
-// Simulate receiving messages (you would replace this with your actual message handling logic)
-while(true) {
-    $message = ''; // Implement logic to get new message
-    if (!empty($message)) {
-        echo "data: $message\n\n";
-        flush();
-    }
-    sleep(1); // Adjust as needed
-}
-?>
+from flask import Flask, render_template
+from flask_socketio import SocketIO, send
+
+app = Flask(__name__)
+app.config['SECRET'] = "secret123!"
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+@socketio.on('message')
+def handle_message(message):
+    print("Received message: " + message)
+    if message != "User connected!":
+        send(message, broadcast=True)
+
+
+@app.route('/')
+def index():
+    
+    return render_template("index.html")
+
+
+if __name__ == "__main__":
+    socketio.run(app, host="172.16.13.19")
